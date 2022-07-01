@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager's Portal</title>
+</head>
+
+<body>
+    <h1>Welcome to the Manager's Portal</h1>
+    <!-- <table>
+       <tr>
+        <th>Defect name</th>
+        <th>Tester choosen</th>
+        <tr>   
+        </tr>
+        <td><li></li></td>
+        <td><li></li></td>
+
+       </tr>
+    </table> -->
+
+    <!-- <h4>Select Defect Name</h4>
+    <select id="defects">
+        <option value="1">Not able to login</option>
+        <option value="2">User sees blank page</option>
+    </select> -->
+
+    <h4>Select Tester</h4>
+    <select id="testers">
+        <!-- <option value="1">Tester 1</option>
+        <option value="2">Tester 2</option> -->
+    </select>
+    <br /><br />
+    <label for="description">Enter defect description</label> <br>
+    <input id="description" type="text" placeholder=""> <br> <br>
+
+    <button onclick="assignDefect()" type="button">Assign</button> <br> <br>
+
+
+    <button onclick="transferToLoginPage()">Click me to go to page one</button>
+    <!-- <p id="result"></p>
+    <p id="sessionInfo"></p> -->
+
+</body>
+<script>
+
+    // to transfer from one local html file to another you can use the window.location.href proper
+    function transferToLoginPage() {
+        // if the html file you want to go to is in a directory "above" the one that holds your current page
+        // then you need to use .. to indicate you are moving up a directory level
+        window.location.href = "login-page.html";
+
+    }
+
+    // const result = document.getElementById("result");
+    // result.textContent = `The number you set on page one is ${localStorage.getItem("number")}`;
+    // const sessionInfo = document.getElementById("sessionInfo");
+    // sessionInfo.textContent = `the number you set in session storage on page one is ${sessionStorage.getItem("sessionNum")}`;
+    const apiEndPoint = "https://bugcatcher.coe.revaturelabs.com";
+    // 1. Get the employees using https://bugcatcher.coe.revaturelabs.com/18/employees.
+    const employeesApiUrl = `${apiEndPoint}/18/employees`;
+    const defectsApiUrl = `${apiEndPoint}/18/defects`;
+
+    // Call the function to get all the employees data:
+    getAllEmployeesData();
+
+    // Call the function to get all the defects
+    getAllDefects();
+
+    // Declaring function to get employees data:
+    async function getAllEmployeesData() {
+        try {
+            const response = await fetch(employeesApiUrl);
+            // console.log({ response })
+            const data = await response.json();
+            console.log('Employees data from api', data);
+            // 2. Dsplay the data on the manager in the select element on the page.
+            // * a. We only need to get data for the testers, not all
+            const testersOnlyData = [];
+            for (let i = 0; i < data.length; i++) {
+                const element = data[i];
+                if (element.role === 'Tester') {
+                    testersOnlyData.push(element);
+                }
+            }
+
+            // *b. Create a list of testers only and display them
+            // Create an "li" node:
+            for (let i = 0; i < testersOnlyData.length; i++) {
+                const tester = testersOnlyData[i];
+                const testerName = `${tester.fname} ${tester.lname}`;
+                // const testerName1 = tester.fname + " " + tester.lname;
+                const testersNode = document.getElementById('testers');
+                const node = document.createElement('option');
+                node.setAttribute('value', tester.username);
+                node.setAttribute('class', "testerClass");
+                // Create a text node:
+                const textNode = document.createTextNode(testerName);
+                node.appendChild(textNode);
+                testersNode.appendChild(node);
+                // console.log({ testersOnlyData });
+            }
+
+        } catch (error) {
+            console.log('There was an error logging you in', error);
+        }
+    }
+
+
+    async function getAllDefects() {
+        try {
+            const response = await fetch(defectsApiUrl);
+            const data = await response.json();
+            console.log('Defects data from api', data);
+            console.table(data)
+
+            // 2. Dsplay the data on the manager in the select element on the page for defects.
+            // * a. We only need to get data for the testers
+            const notAcceptedDefects = [];
+            for (let i = 0; i < data.length; i++) {
+                const element = data[i];
+                if (element.status !== 'Accepted') {
+                    notAcceptedDefects.push(element);
+                }
+            }
+
+            // *b. Create a list of unaccepted only and display them
+            // Create an "li" node:
+            for (let i = 0; i < notAcceptedDefects.length; i++) {
+                const defect = notAcceptedDefects[i];
+
+                const itemNode = document.getElementById('defects');
+                const node = document.createElement('option');
+                node.setAttribute('value', defect.defectId);
+                // Create a text node:
+                const textNode = document.createTextNode(defect.desc);
+                node.appendChild(textNode);
+                itemNode.appendChild(node);
+                // console.log({ notAcceptedDefects });
+            }
+
+        } catch (error) {
+            console.log('There was an error logging you in', error);
+        }
+    }
+
+    async function assignDefect() {
+        // 1. Get the selected tester's username
+        const selectTesterNode = document.getElementById('testers');
+        const selectedTersterUsername = selectTesterNode.value;
+
+        // 2. Get the value of the defect description
+        const descNode = document.getElementById('description');
+        const description = descNode.value;
+
+        console.log({ selectedTersterUsername, description })
+
+        // 3. Send an api patch to create the defect
+        const assignDefectEndPoint = `${apiEndPoint}/18/defects`;
+        console.log({ assignDefectEndPoint })
+       
+
+        const payload = {
+            "assignedTo": selectedTersterUsername,
+            "dateReported": 0,
+            "desc": description,
+            "stepsToReproduce": "string",
+            "severity": "Low",
+            "priority": "Low"
+        }
+        try {
+            const response = await fetch(assignDefectEndPoint, {
+                method: "POST",
+                headers: {
+                    Accept: "*/*",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload),
+
+            });
+            console.log({ response })
+            const data = await response.json();
+            alert('Defect created successfuly')
+            console.log('updated defect', data)
+        } catch (error) {
+            console.log('There was an error updating the selected defect', { error });
+        }
+
+
+    }
+
+    // async function assignDefectOld() {
+    //     // create variables to:
+    //     // 1. Get the selected defect id:
+    //     // Get reference to the select
+    //     const selectDefectsNode = document.getElementById('defects');
+    //     const selectedDefectId = selectDefectsNode.value;
+
+    //     // 2. Get the selected tester's username
+    //     const selectTesterNode = document.getElementById('testers');
+    //     const selectedTersterUsername = selectTesterNode.value;
+
+    //     console.log({ selectedDefectId, selectedTersterUsername });
+
+    //     // 3. Send an api patch to update/re-assign the defect
+    //     const updateDefectEndPoint = `${apiEndPoint}/18/defects/${selectedDefectId}`;
+    //     console.log({updateDefectEndPoint})
+    //     const payload = {
+    //         assignedTo: selectedTersterUsername,
+    //         status: "Pending",
+    //     };
+    //     try {
+    //         const response = await fetch(updateDefectEndPoint, {
+    //             method: "PATCH",
+    //             headers: {
+    //                 Accept: "*/*",
+    //                 "Content-Type": "application/json"
+    //             },
+    //             body: JSON.stringify(payload),
+
+    //         });
+    //         console.log({response})
+    //         const data = await response.json();
+    //         console.log('updated defect', data)
+    //     } catch (error) {
+    //         console.log('There was an error updating the selected defect', {error, selectedDefectId});
+    //     }
+
+
+    // }
+
+
+
+</script>
+
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <!-- <style>
+        input {
+            width: 300px;
+            height: 30px;
+            border-radius: 5px;
+        }
+    </style> -->
+</head>
+
+<body>
+    <h1>Welcome to the login Home Page</h1>
+    <!-- <input onclick="selectManager()" type="button" value="Manager">
+    <input onclick="selectTester()" type="button" value="Tester"><br> -->
+
+    <div>
+        <br>
+        <input type="text" id="userName" placeholder="Please enter your username"> <br>
+        <br>
+        <br>
+        <input type="password" id="password" placeholder="Please enter your password"> <br>
+        <br>
+        <br>
+
+        <br> <br>
+    </div>
+
+    <!-- <div>
+        <h3>Tester</h3>
+        <br>
+        <input type="text" id="userName" placeholder="Please enter your username" value="Mkamara"> <br>
+        <br>
+        <br>
+        <input type="password" id="password" placeholder="Please enter your password" value="Ethan"> <br>
+        <br>
+        <br>
+
+        <br> <br>
+
+        <h3>Manager</h3>
+        <br>
+        <input type="text" id="userName" placeholder="Please enter your username" value="Lmurungi"> <br>
+        <br>
+        <br>
+        <input type="password" id="password" placeholder="Please enter your password" value="Mark"> <br>
+        <br>
+        <br>
+
+        <br> <br>
+    </div> -->
+
+
+    <button onclick="loginUser()">Login User</button><br>
+
+    <!-- <a href="login_manager-page.html">click me to go to manager's Portal</a> -->
+
+    <!-- <label for="number">please enter a number for local storage</label>
+    <input type="number" id="number">
+    <label for="sessionNum">please enter a number for session storage</label>
+    <input type="number" id="sessionNum"> -->
+
+
+
+</body>
+
+<script>
+    const apiEndPoint = "https://bugcatcher.coe.revaturelabs.com";
+    // Get input reference
+    const usernameInput = document.getElementById("userName");
+    const passwordInput = document.getElementById("password");
+
+    var selectedRole;
+
+    function selectManager() {
+        selectedRole = "Manager";
+    }
+
+    function selectTester() {
+        selectedRole = "Tester";
+    }
+
+    async function loginUser() {
+        // Get values from inputs
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+
+        var userInfo = {
+            username,
+            password,
+            role: selectedRole
+        };
+        const config = {
+            method: "PATCH",
+            headers: { 'Content-Type': "application/json" },
+            body: JSON.stringify(userInfo)
+        }
+
+        // Check user with api
+        // const loginApiUrl = apiEndPoint + "/18/login";
+        // const loginApiUrl =  "https://bugcatcher.coe.revaturelabs.com/18/login";
+        const loginApiUrl = `${apiEndPoint}/18/login`;
+
+        try {
+            const response = await fetch(loginApiUrl, config);
+            console.log({ response })
+            const data = await response.json();
+            console.log('data from api', data);
+
+
+            // Get all defects:
+            const defectApiLink = apiEndPoint + "/18/defects";
+            const d = await fetch(defectApiLink);
+            const defects = await d.json();
+            console.log('all Defects', defects);
+            //return false;
+            // End testing defects
+
+
+            if (data.role === "Manager") {
+                localStorage.setItem('username', data.username);
+                window.location.href = "login_manager-page.html";
+            } else if (data.role === "Tester") {
+                // Get username of the tester and save it to local storage
+                localStorage.setItem('username', data.username);
+                window.location.href = "login-tester.html";
+            } else {
+                alert(data.detail);
+            }
+            // Check who is logging in (role)
+        } catch (error) {
+            console.log('There was an error logging you in', error);
+        }
+
+        // fetch(apiLink, config)
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log('data from api', data);
+        //     })
+        //     .catch(error => {
+        //         console.log('There was an error logging you in', error);
+        //     });
+        return;
+
+
+        localStorage.setItem("number", input.value)
+        sessionStorage.setItem("sessionNum", sessionInput.value);
+
+
+
+    }
+
+
+
+    const input = document.getElementById("number");
+    const sessionInput = document.getElementById("sessionNum");
+
+
+
+
+
+
+
+
+    // first I will make three objects that represent the responses of an http request: one for each user that needs their landing page
+    const personOne = {
+        username: "personOne",
+        role: "Manager",
+        Fullname: ""
+    }
+    const personTwo = {
+        username: "personTwo",
+        role: "Tester",
+        Fullname: ""
+    }
+
+    const personThree = {
+        username: "PersonThree",
+        Role: "Validator",
+        Fullname: "",
+    }
+
+
+    /*
+   when determing where to send someone after a successfull login, you will want to choose one of the keys provided in the response body that
+   will return a consistent response no matter who is trying to login. In the case above, we will use the role of the individual to determine
+   which login page they will be redirected to, because this provides a consistent metric to work with. For this example all the individuals
+   will use the same password: password.
+*/
+
+    function login() {
+        // to make this example work I first need to simulate making the http request to actually perform the login
+        // please note the actual code you will write for this will look different
+
+        // first thing to do is get the login info
+        let username = usernameInput.value;
+        let password = passwordInput.value;
+        let responseBody;
+        // the checks I am about to make would typically be handled by the API you interact with
+        if (username === "personOne" && password === "password") {
+            responseBody = personOne;
+        } else if (username === "personTwo" && password === "password") {
+            responseBody = personTwo;
+        } else if (username === "personThree" && password === "password") {
+            responseBody = personThree;
+        } else {
+            alert("login failed: please try again")
+        }
+
+        // we can assume we wrote our code to check the status code and we got a 200
+        // we can now use the role of the response we got to determine what page to be sent to
+
+        if (responseBody.role === "Manager") {
+            window.location.href = "login-manager-page.html";
+        } else if (responseBody.role === "Tester") {
+            window.location.href = "login-tester.html";
+        } else if (responseBody.role === "jester for the king") {
+            window.location.href = "landing-three.html";
+        } else {
+            // this is my catch-all block in case something goes wrong that I didn't anticipate
+            alert("something went wrong: please try again");
+        }
+
+    }
+
+
+
+    //console.log("2---------dbqdbqdbqw")
+
+
+
+</script>
+
+</html>

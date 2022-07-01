@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tester Page</title>
+    <style>
+        .description {
+            display: block;
+            border: 1px solid grey;
+            width: 200px;
+            padding: 5px;
+            margin: 5px 0;
+        }
+        .wrapper {
+            background-color: #ccc;
+            border: 1px solid grey;
+            margin: 10px;
+            padding:10px;
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Welcome to the Tester's Portal</h1>
+
+    <div id="testerDefects">
+        <!-- All defects will go here -->
+    </div>
+    <br><br>
+
+    <button onclick="logout()">Logout</button>
+
+    <script>
+        const apiEndPoint = "https://bugcatcher.coe.revaturelabs.com";
+
+        const defectsApiUrl = `${apiEndPoint}/18/defects`;
+        // Get username from localstorage
+        const username = localStorage.getItem("username");
+        // Get the defects for the above username
+        getTesterDefectsByUsername(username);
+
+        // Function to go to the validation page
+        function transferToValidation() {
+            window.location.href = "validation.html";
+        }
+
+        // Fucntion for logging out
+        function logout() {
+            window.location.href = "login-page.html";
+        }
+
+        async function getTesterDefectsByUsername(username) {
+            // Call API to get all the defects
+            const response = await fetch(defectsApiUrl);
+            const data = await response.json();
+            console.log('Defects data from api', data);
+            console.table(data)
+
+            // 2. Dsplay the data on the manager in the select element on the page for defects.
+            // * a. We only need to get data for the testers, not all
+            // Then we remove those defects whose ids are not for the one passed into the params
+            const currentTesterDefects = [];
+            for (let i = 0; i < data.length; i++) {
+                const element = data[i];
+                if (element.assignedTo === username) {
+                    currentTesterDefects.push(element);
+                }
+            }
+
+            buildUserInterfaceWithData(currentTesterDefects);
+            console.log({ currentTesterDefects })
+
+        }
+
+        function buildUserInterfaceWithData(arrayOfDefects) {
+            const node = document.getElementById("testerDefects");
+            for (let i = 0; i < arrayOfDefects.length; i++) {
+                const defect = arrayOfDefects[i];
+                const x = `
+                    <div class="wrapper">
+                        <span><b>Defect Name:</b></span><br>
+                        <span class="description">${defect.desc}</span>
+                        
+                        <br>
+                        <span><b>Defect ID:</b></span> <br>
+                        <span class="description">${defect.defectId}</span>
+
+                        <br>
+                        <span><b>Defect Status:</b></span> <br>
+                        <span class="description">${defect.status}</span>
+
+                        <button onclick="acceptOrDeclineDefect(${defect.defectId}, 'Accepted')">Accept</button>
+                        <button onclick="acceptOrDeclineDefect(${defect.defectId}, 'Declined')">Decline</button>
+                    </div>
+                `;
+                // node.innerHTML = x;
+                node.insertAdjacentHTML( 'beforeend', x );
+
+            }
+
+        }
+
+        async function acceptOrDeclineDefect(selectedDefectId, defectStatus) {
+            // 3. Send an api patch to update/re-assign the defect
+            const updateDefectEndPoint = `${apiEndPoint}/18/defects/${selectedDefectId}`;
+            // console.log({ updateDefectEndPoint })
+            const payload = {
+                status: defectStatus,
+            };
+            try {
+                const response = await fetch(updateDefectEndPoint, {
+                    method: "PATCH",
+                    headers: {
+                        Accept: "*/*",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload),
+
+                });
+                // console.log({ response })
+                const data = await response.json();
+                // console.log('updated defect', data)
+                // getTesterDefectsByUsername();
+            } catch (error) {
+                // console.log('There was an error updating the selected defect', { error, selectedDefectId });
+            }
+        }
+    </script>
+
+</body>
+
+</html>

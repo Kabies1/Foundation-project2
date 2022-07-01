@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------------
+Test set: com.maurice2.runner.TestRunner
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 5, Skipped: 0, Time elapsed: 7.343 s <<< FAILURE! - in com.maurice2.runner.TestRunner
+Users need to be on the custom homepage to perform duties(Users of my api-automation should be able to login to access their homepages)  Time elapsed: 2.04 s  <<< ERROR!
+org.openqa.selenium.UnhandledAlertException: 
+unexpected alert open: {Alert text : Incorrect password for Lmurungi}
+  (Session info: chrome=103.0.5060.53): Incorrect password for Lmurungi
+Build info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'
+System info: host: 'maurices-MBP', ip: 'fe80:0:0:0:109c:f0e7:6013:9833%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '12.4', java.version: '1.8.0_333'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 103.0.5060.53, chrome: {chromedriverVersion: 103.0.5060.53 (a1711811edd7..., userDataDir: /var/folders/8r/c6ng1t951kn...}, goog:chromeOptions: {debuggerAddress: localhost:51516}, javascriptEnabled: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: MAC, platformName: MAC, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:virtualAuthenticators: true}
+Session ID: a983c9ebbf939ff6972a15c4f2ffba9d
+
+Users need to be on their custom homepage to perform duties(Users of my api-automation should be able to login to access their homepages)  Time elapsed: 1.241 s  <<< ERROR!
+org.openqa.selenium.UnhandledAlertException: 
+unexpected alert open: {Alert text : Incorrect password for Mkamara}
+  (Session info: chrome=103.0.5060.53): Incorrect password for Mkamara
+Build info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'
+System info: host: 'maurices-MBP', ip: 'fe80:0:0:0:109c:f0e7:6013:9833%en0', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '12.4', java.version: '1.8.0_333'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 103.0.5060.53, chrome: {chromedriverVersion: 103.0.5060.53 (a1711811edd7..., userDataDir: /var/folders/8r/c6ng1t951kn...}, goog:chromeOptions: {debuggerAddress: localhost:51516}, javascriptEnabled: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: MAC, platformName: MAC, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:virtualAuthenticators: true}
+Session ID: a983c9ebbf939ff6972a15c4f2ffba9d
+
+As a manager I want to be able to assign deffects to the testers(As a manager I should be able to access the a list of testers on my homepages)  Time elapsed: 0.033 s  <<< ERROR!
+io.cucumber.java.PendingException: TODO: implement me
+
+Users need to be on their custom homepage to perform duties(Testers should be able to update defects so they can monitor their progress)  Time elapsed: 0.005 s  <<< ERROR!
+io.cucumber.java.PendingException: TODO: implement me
+
+Users need to be on their custom homepage to perform duties(Testers should be able to update defects so they can monitor their progress)  Time elapsed: 0.006 s  <<< ERROR!
+io.cucumber.java.PendingException: TODO: implement me
+
